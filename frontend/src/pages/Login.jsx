@@ -3,31 +3,29 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/ContextProvider";
 
-
-export const Login = () => {
-  
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate()
-  const {login}= useAuth()
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // ✅ FIXED
+    e.preventDefault();
 
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         "http://localhost:5000/api/auth/login",
-        {  email, password }
+        { email, password }
       );
-       if(response.data.success){
-        login(response.data.user)
-        localStorage.setItem("token",response.data.token)
-        navigate('/')
-      }
+
+      // ✅ SUCCESS
+      login(res.data.user);
+      localStorage.setItem("token", res.data.token);
+      navigate("/");
+
     } catch (error) {
-      console.log(error)
-        
-      
+      alert(error.response?.data?.message || "Login failed");
+      console.error(error);
     }
   };
 
@@ -37,39 +35,30 @@ export const Login = () => {
         <h2 className="text-2xl font-bold mb-4">Login</h2>
 
         <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-            <label className="block text-gray-700">Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border"
-              placeholder="Enter Email"
-              required
-            />
-          </div>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full mb-3 p-2 border"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-          <div className="mb-4">
-            <label className="block text-gray-700">Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border"
-              placeholder="Enter password"
-              required
-            />
-          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full mb-3 p-2 border"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-          <button
-            type="submit"
-            className="w-full bg-teal-600 text-white py-2"
-          >
+          <button className="w-full bg-teal-600 text-white py-2">
             Login
           </button>
 
           <p className="text-center mt-2">
-            Don't Have Account? <Link to='/register'>Reigster</Link>
+            Don’t have an account? <Link to="/register">Register</Link>
           </p>
         </form>
       </div>
